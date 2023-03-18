@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public class Galette
 {
     // Attributs
-
+    public static final int NB_PARTS = 8;
     private String name;
     private ArrayList<PartDeGalettes> liste_part;
 
@@ -27,13 +27,14 @@ public class Galette
 
     // Constructeur
 
-    public Galette(String n)
+    public Galette(String n, boolean feve)
     {
         name = n;
-        int pos_feve = (int) (Math.random() * 8) + 1 ;
+        int pos_feve = -1;
+        if (feve)   pos_feve = (int) (Math.random() * NB_PARTS) ;
         liste_part = new ArrayList<>();
         PartDeGalettes p;
-        for (int i = 0; i < 8; i++)
+        for (int i = 0; i < NB_PARTS; i++)
         {
             double poids_part = (Math.random() * 50) + 100;
             if (pos_feve == i)

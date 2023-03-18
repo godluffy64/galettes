@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public abstract class Mangeur
 {
 
@@ -62,23 +64,23 @@ public abstract class Mangeur
 
     // Méthodes
 
-    public int mangerPart(Galette g, PartDeGalettes p)
+    public void mangerPart(Galette g, PartDeGalettes p)
     {
         if(!(p.getPoids() > (getPoids_max() - getPoids_mange())))
         {
             setPoids_mange(getPoids_mange() + p.getPoids());
             setFeve(p.isFeve());
             g.retirerPart(p);
-            return 0;
 
         }
         else
         {
-            System.out.println("Je ne peut pas ta mere");
-            return 1;
+            System.out.println("Je ne peut pas ta mere " + getName());
         }
     }
 
     abstract public PartDeGalettes recherchePart(Galette G);
+
+    abstract public Object[] recherchePart(ArrayList<Galette> G);
 
 }
