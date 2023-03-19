@@ -37,19 +37,72 @@ public class Concours {
         for (int i = 1; i < NB_COMPETITEUR + 1; i++)
         {
             Mangeur mangeur;
-            int r = (int) (Math.random() * 2);
-            if (r == 0)
+            Strategy strategy;
+            String type;
+            int p_max;
+            int r = (int) (Math.random() * 3);
+            switch (r)
             {
-                mangeur = new Gourmet("Compétiteur " + i);
+                case (0) :
+                {
+                    strategy = new GourmetStrategy();
+                    type = "Gourmet";
+                    p_max = 500;
+                    break;
+                }
+                case (1) :
+                {
+                    strategy = new GourmandStrategy();
+                    type = "Gourmand";
+                    p_max = 2000;
+                    break;
+                }
+                default :
+                {
+                    strategy = new VeganStrategy();
+                    type = "Vegan";
+                    p_max = 1500;
+                    break;
+                }
             }
-            else mangeur = new Gourmand("Compétiteur " + i);
+            mangeur = new Mangeur("Compétiteur " + i + " " + type, p_max, strategy);
             competiteurs.add(mangeur);
         }
-        int pos_feve_galette = (int)(Math.random() * NB_GALETTES) +1;
+        GaletteFactory PistacheFactory = new GalettePistacheFactory();
+        GaletteFactory AllegeFactory = new GaletteAllegeFactory();
+        GaletteFactory FrangipaneFactory = new GaletteFrangipaneFactory();
+        GaletteFactory VeganFactory = new GaletteVeganFactory();
+
+        int randomNumber;
+        int pos_feve_galette = (int)(Math.random() * NB_GALETTES) + 1; // position de la galette qui aura la fève
         for (int i = 1; i < NB_GALETTES + 1; i++)
         {
-            if (pos_feve_galette == i) liste_galettes.add(new Galette("Galette " + i, true));
-            else liste_galettes.add(new Galette("Galette " + i, false));
+            Random random = new Random();
+            randomNumber = random.nextInt(4);
+            if (randomNumber == 0)
+            {
+                if (pos_feve_galette == i) liste_galettes.add(new GalettePistache("Galette " + i, true));
+                else liste_galettes.add(new GalettePistache("Galette " + i, false));
+            }
+
+            else if(randomNumber == 1)
+            {
+                {
+                    if (pos_feve_galette == i) liste_galettes.add(new GaletteFrangipane("Galette " + i, true));
+                    else liste_galettes.add(new GaletteFrangipane("Galette " + i, false));
+                }
+            }
+            else if (randomNumber == 2)
+            {
+                if (pos_feve_galette == i) liste_galettes.add(new GaletteAllege("Galette " + i, true));
+                else liste_galettes.add(new GaletteAllege("Galette " + i, false));
+            }
+            else if (randomNumber == 3)
+            {
+                if (pos_feve_galette == i) liste_galettes.add(new GaletteVegan("Galette " + i, true));
+                else liste_galettes.add(new GaletteVegan("Galette " + i, false));
+            }
+
         }
 
     }
@@ -58,10 +111,10 @@ public class Concours {
 
     public void montrerConcours()
     {
-        System.out.println("Concours :\nCompétiteurs :");
+        System.out.println("Compétiteurs :");
         for(Mangeur mangeur : competiteurs)
         {
-            System.out.println("- " + mangeur.getName() + " "+ mangeur.getType() + " " + mangeur.getPoids_mange() + " fève : " + mangeur.isFeve());
+            System.out.println("- " + mangeur.getName() + " "+ " " + mangeur.getPoids_mange() + " fève : " + mangeur.isFeve());
         }
         for(Galette galette : liste_galettes)
         {
@@ -81,7 +134,14 @@ public class Concours {
     {
         for(int i = 0; i < competiteurs.size(); i++)
         {
-            if(competiteurs.get(i).recherchePart(liste_galettes) == null)
+            PartDeGalettes part = null;
+            Object[] list = competiteurs.get(i).getStrategy().strategie(liste_galettes);
+
+            if (list != null)
+            {
+                part = (PartDeGalettes) list[1];
+            }
+            if(list == null || competiteurs.get(i).getPoids_max() <  competiteurs.get(i).getPoids_mange() + part.getPoids())
             {
                 System.out.println("Compétiteur : " + competiteurs.get(i).getName() + " ne peut plus manger");
                 competiteurs.remove(competiteurs.get(i));
@@ -136,11 +196,16 @@ public class Concours {
                 System.out.println(verifierFeve().getName() + " à gagné !");
                 return verifierFeve();
             }
-            System.out.println("Tour " + tour+ " :");
+            System.out.println("--------------- Tour " + tour+ " ---------------");
             for(int i = 0; i < competiteurs.size(); i++)
             {
-                Object[] list = competiteurs.get(i).recherchePart(getListe_galettes());
-                competiteurs.get(i).mangerPart((Galette) list[0], (PartDeGalettes) list[1]);
+                Object[] list;
+                list = competiteurs.get(i).getStrategy().strategie(getListe_galettes());
+                if (list != null)
+                {
+                    competiteurs.get(i).mangerPart((Galette) list[0], (PartDeGalettes) list[1]);
+                }
+
                 nettoyerTable();
                 enleverLesPerdants();
             }

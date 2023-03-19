@@ -1,14 +1,34 @@
 import java.util.ArrayList;
 
-public class Galette
+public abstract class Galette
 {
     // Attributs
     public static final int NB_PARTS = 8;
+
+
+    private GaletteType galetteType;
+
+
+    private int poids;
     private String name;
     private ArrayList<PartDeGalettes> liste_part;
 
     // Setters et Getters
+    public GaletteType getGaletteType() {
+        return galetteType;
+    }
 
+    public void setGaletteType(GaletteType galetteType) {
+        this.galetteType = galetteType;
+    }
+
+    public int getPoids() {
+        return poids;
+    }
+
+    public void setPoids(int poids) {
+        this.poids = poids;
+    }
     public String getName() {
         return name;
     }
@@ -27,16 +47,17 @@ public class Galette
 
     // Constructeur
 
-    public Galette(String n, boolean feve)
+    public Galette(String n, int poids, boolean feve, GaletteType type)
     {
         name = n;
+        galetteType = type;
         int pos_feve = -1;
         if (feve)   pos_feve = (int) (Math.random() * NB_PARTS) ;
         liste_part = new ArrayList<>();
         PartDeGalettes p;
         for (int i = 0; i < NB_PARTS; i++)
         {
-            double poids_part = (Math.random() * 50) + 100;
+            double poids_part = (Math.random() *((int) (poids / NB_PARTS) * 0.2)) + ((poids * 0.9) / NB_PARTS) ;
             if (pos_feve == i)
             {
                 p = new PartDeGalettes(poids_part, true);
@@ -61,7 +82,7 @@ public class Galette
 
     public void montrerGalette()
     {
-        System.out.println("Galette : " + getName());
+        System.out.println("Galette : " + getName() + " " + getGaletteType());
         for(PartDeGalettes part : getListe_part())
         {
             System.out.println("- " + String.format("%.2f", part.getPoids()) + " grammes, fève : " + part.isFeve());

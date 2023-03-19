@@ -1,9 +1,10 @@
 import java.util.ArrayList;
 
-public abstract class Mangeur
+public class Mangeur
 {
 
-    private Type type;
+
+    private Strategy strategy;
     private String name;
     private double poids_max;
     private double poids_mange;
@@ -11,15 +12,23 @@ public abstract class Mangeur
 
     // Constructeur avec name et poids_max
 
-    public Mangeur(String n, double pmax)
+    public Mangeur(String n, double pmax, Strategy strat)
     {
         name = n;
         poids_max = pmax;
+        strategy = strat;
         feve = false;
         poids_mange = 0;
     }
 
     // Getters et Setters
+    public Strategy getStrategy() {
+        return strategy;
+    }
+
+    public void setStrategy(Strategy strategy) {
+        this.strategy = strategy;
+    }
 
     public String getName() {
         return name;
@@ -54,33 +63,18 @@ public abstract class Mangeur
     }
 
 
-    public Type getType() {
-        return type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
-    }
 
     // Méthodes
 
-    public void mangerPart(Galette g, PartDeGalettes p)
+    public int mangerPart(Galette g, PartDeGalettes p)
     {
         if(!(p.getPoids() > (getPoids_max() - getPoids_mange())))
         {
             setPoids_mange(getPoids_mange() + p.getPoids());
             setFeve(p.isFeve());
             g.retirerPart(p);
-
+            return 0;
         }
-        else
-        {
-            System.out.println("Je ne peut pas ta mere " + getName());
-        }
+        else return 1;
     }
-
-    abstract public PartDeGalettes recherchePart(Galette G);
-
-    abstract public Object[] recherchePart(ArrayList<Galette> G);
-
 }
